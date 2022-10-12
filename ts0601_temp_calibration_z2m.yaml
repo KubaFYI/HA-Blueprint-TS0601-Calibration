@@ -28,15 +28,13 @@ variables:
   calibration: !input 'calibration'
   temp_sensor: !input 'temp_sensor'
 trigger:
-- platform: time_pattern
-  minutes: /10
-- platform: template
-  value_template: '{{ ( state_attr(''valve'', ''current_temperature'')|float(0) -
-    states(''temp_sensor'')|float(0))|abs > 0.25 }}'
-  for: 00:00:02
+  platform: mqtt
+  topic: "zigbee2mqtt/+"
 condition:
   condition: and
   conditions:
+  - condition: template
+    value_template: '{{ trigger.topic == ''zigbee2mqtt/'' + valve.entity_id }}'
   - condition: template
     value_template: '{{ states(temp_sensor) != ''unavailable'' }}'
   - condition: template
